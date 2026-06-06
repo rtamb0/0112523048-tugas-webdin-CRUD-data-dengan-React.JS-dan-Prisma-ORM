@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import EmployeeForm from "./EmployeeForm";
 import { deleteEmployee } from "./actions";
 import Image from "next/image";
+import DeleteButton from "./DeleteButton";
 
 export default async function EmployeesPage() {
   // Ambil semua data master untuk form
@@ -147,16 +148,7 @@ export default async function EmployeesPage() {
                         await deleteEmployee(emp.id);
                       }}
                     >
-                      <button
-                        type="submit"
-                        onClick={(e) => {
-                          if (!confirm(`Hapus karyawan "${emp.name}"?`))
-                            e.preventDefault();
-                        }}
-                        className="text-red-500 hover:text-red-700 text-sm font-medium"
-                      >
-                        Hapus
-                      </button>
+                      <DeleteButton employeeName={emp.name} />
                     </form>
                   </td>
                 </tr>
