@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { writeFile } from "fs/promises";
 import path from "path";
+import { redirect } from "next/navigation";
 
 // ───────────────────────────────────────────
 // ACTION: Tambah Karyawan Baru
@@ -54,4 +55,54 @@ export async function createEmployee(formData: FormData) {
 export async function deleteEmployee(id: number) {
   await prisma.employee.delete({ where: { id } });
   revalidatePath("/employees");
+}
+
+// ───────────────────────────────────────────
+// ACTION: Edit Karyawan
+// ───────────────────────────────────────────
+export async function editEmployee(formData: FormData) {
+  const id = parseInt(formData.get("id") as string);
+  const name = formData.get("name") as string;
+  const email = formData.get("email") as string;
+  const gender = formData.get("gender") as string;
+  const status = formData.get("status") as string;
+  const positionId = parseInt(formData.get("positionId") as string);
+  const skillIds = formData.getAll("skills") as string[];
+  const photo = formData.get("photo") as File;
+
+  // Handle upload foto (jika ada file baru yang diupload)
+  let photoPath: string | null = null;
+  if (photo && photo.size > 0) {
+    const bytes = await photo.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const filename = `${Date.now()}-${photo.name.replace(/\s/g, "_")}`;
+    const filepath = path.join(process.cwd(), "public", "uploads", filename);
+    await writeFile(filepath, buffer);
+    photoPath = `/uploads/${filename}`;
+  } else {
+    // Jika tidak upload foto baru, pertahankan path lama
+    const existingEmployee = await prisma.employee.findUnique({
+      where: { id },
+    });
+    photoPath = existingEmployee?.photoPath || null;
+  }
+
+  // Update data karyawan di database
+
+  await prisma.employee.update({
+    where: { id },
+    data: {
+      name,
+      email,
+      gender,
+      status,
+      positionId,
+      photoPath,
+      skills: {
+        set: skillIds.map((id) => ({ id: parseInt(id) })),
+      },
+    },
+  });
+
+  redirect("/employees");
 }

@@ -3,6 +3,7 @@ import EmployeeForm from "./EmployeeForm";
 import { deleteEmployee } from "./actions";
 import Image from "next/image";
 import DeleteButton from "./DeleteButton";
+import EditButton from "./EditButton";
 
 export default async function EmployeesPage() {
   // Ambil semua data master untuk form
@@ -153,6 +154,7 @@ export default async function EmployeesPage() {
                     >
                       <DeleteButton employeeName={emp.name} />
                     </form>
+                    <EditButton employeeId={emp.id} />
                   </td>
                 </tr>
               ))}
