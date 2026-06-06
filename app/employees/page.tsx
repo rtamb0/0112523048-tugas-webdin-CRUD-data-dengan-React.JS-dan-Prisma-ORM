@@ -26,6 +26,9 @@ export default async function EmployeesPage() {
 
   return (
     <main className="max-w-6xl mx-auto p-6 space-y-8">
+      <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition">
+        <a href="/">Back to Home</a>
+      </button>
       <h1 className="text-2xl font-bold text-gray-900">Manajemen Karyawan</h1>
 
       {/* ── FORM ── */}
